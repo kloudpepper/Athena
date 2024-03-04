@@ -1,5 +1,4 @@
-
-yyyy-MM-dd'T'HH:mm:ss.SSSZ
+#yyyy-MM-dd'T'HH:mm:ss.SSSZ
 
 
 #Crear la tabla
@@ -23,11 +22,11 @@ CREATE EXTERNAL TABLE aws_config_configuration_snapshot (
         supplementaryConfiguration : MAP < STRING, STRING >,
         tags: MAP < STRING, STRING >,
         resourceCreationTime : STRING > >
-) 
+)
 PARTITIONED BY ( accountid STRING, dt STRING , region STRING )
-ROW FORMAT SERDE 
- 'org.openx.data.jsonserde.JsonSerDe' 
-WITH SERDEPROPERTIES ( 
+ROW FORMAT SERDE
+ 'org.openx.data.jsonserde.JsonSerDe'
+WITH SERDEPROPERTIES (
   'case.insensitive'='false',
   'mapping.fileversion'='fileVersion',
   'mapping.configsnapshotid'='configSnapshotId',
@@ -47,7 +46,7 @@ WITH SERDEPROPERTIES (
   'mapping.supplementaryconfiguration'='supplementaryConfiguration',
   'mapping.configurationstateid'='configurationStateId'
   )LOCATION 's3://aws-controltower-logs-223293441139-us-east-1/o-l6qcpc3qam/AWSLogs/';
-  
+
 
 
 #######Extraer inventario########
@@ -112,7 +111,6 @@ AND (configurationItem.awsRegion = 'us-east-1' OR configurationItem.awsRegion = 
 AND NOT configurationItem.tags['Name'] = 'aws-controltower'
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_Subnets AS
 SELECT DISTINCT
@@ -135,7 +133,6 @@ WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::EC2::Su
 ORDER BY AccountID
 
 
-
 #RouteTable
 ## Athena ##
 SELECT configurationItem.configurationItemCaptureTime as CreationTime,
@@ -155,7 +152,6 @@ AND configurationItem.resourceType = 'AWS::EC2::RouteTable'
 AND (configurationItem.awsRegion = 'us-east-1' OR configurationItem.awsRegion = 'us-west-2')
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_RouteTable AS
 SELECT DISTINCT
@@ -173,7 +169,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::EC2::RouteTable') AND ("configurationItem"."awsRegion" = 'us-east-1' OR "configurationItem"."awsRegion" = 'us-west-2'))
 ORDER BY AccountID
-
 
 
 #Endpoint
@@ -200,7 +195,6 @@ AND configurationItem.resourceType = 'AWS::EC2::VPCEndpoint'
 AND (configurationItem.awsRegion = 'us-east-1' OR configurationItem.awsRegion = 'us-west-2')
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_Endpoint AS
 SELECT DISTINCT
@@ -223,8 +217,7 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::EC2::VPCEndpoint') AND ("configurationItem"."awsRegion" = 'us-east-1' OR "configurationItem"."awsRegion" = 'us-west-2'))
 ORDER BY AccountID
-  
-  
+
 
 #SecurityGroups
 ## Athena ##
@@ -244,8 +237,7 @@ WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::EC2::SecurityGroup'
 AND (configurationItem.awsRegion = 'us-east-1' OR configurationItem.awsRegion = 'us-west-2')
 AND NOT configurationItem.tags['Name'] = 'controltower'
-ORDER BY AccountID  
-
+ORDER BY AccountID
 
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_SecurityGroup AS
@@ -264,7 +256,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::EC2::SecurityGroup') AND ("configurationItem"."awsRegion" = 'us-east-1' OR "configurationItem"."awsRegion" = 'us-west-2'))
 ORDER BY AccountID
-
 
 
 #EC2
@@ -298,7 +289,6 @@ CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::EC2::Instance'
 ORDER BY AccountID
-
 
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_EC2 AS
@@ -355,7 +345,6 @@ WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::ElasticLoadBalancingV2::LoadBalancer'
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_LoadBalancer AS
 SELECT DISTINCT
@@ -377,7 +366,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::ElasticLoadBalancingV2::LoadBalancer'))
 ORDER BY AccountID
-
 
 
 #RDS
@@ -415,8 +403,6 @@ CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::RDS::DBInstance'
 ORDER BY AccountID
-
-
 
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_RDS AS
@@ -476,7 +462,6 @@ AND configurationItem.resourceType = 'AWS::S3::Bucket'
 AND NOT configurationItem.resourceName = 'aws-controltower'
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_S3 AS
 SELECT DISTINCT
@@ -514,7 +499,6 @@ WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::ApiGateway::RestApi'
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_APIGateway AS
 SELECT DISTINCT
@@ -530,7 +514,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::ApiGateway::RestApi'))
 ORDER BY AccountID
-
 
 
 #Lambda
@@ -556,7 +539,7 @@ CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::Lambda::Function'
 AND NOT configurationItem.resourceName = 'aws-controltower-NotificationForwarder'
-ORDER BY AccountID 
+ORDER BY AccountID
 
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_Lambda AS
@@ -581,9 +564,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::Lambda::Function') AND NOT ("configurationItem"."resourceName" = 'aws-controltower-NotificationForwarder'))
 ORDER BY AccountID
-
-
-
 
 
 #IAM
@@ -624,7 +604,6 @@ WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::IAM::Us
 ORDER BY AccountID
 
 
-
 #ECS Cluster
 ## Athena ##
 SELECT configurationItem.resourceType as ResourceType,
@@ -651,8 +630,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::ECS::Cluster'))
 ORDER BY AccountID
-
-
 
 
 #ECS Service
@@ -689,7 +666,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::ECS::Service'))
 ORDER BY AccountID
-
 
 
 #EFS
@@ -730,8 +706,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::EFS::FileSystem'))
 ORDER BY AccountID
-
-
 
 
 #TransitGateway
@@ -782,9 +756,6 @@ WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::EC2::Tr
 ORDER BY AccountID
 
 
-
-
-
 #ECR
 ## Athena ##
 SELECT configurationItem.configurationItemCaptureTime as LastModified,
@@ -801,7 +772,6 @@ WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::ECR::Repository'
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_ECR AS
 SELECT DISTINCT
@@ -817,7 +787,6 @@ FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST("configurationitems") t (configurationItem)
 WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::ECR::Repository'))
 ORDER BY AccountID
-
 
 
 #ACM
@@ -843,7 +812,6 @@ WHERE dt = 'latest'
 AND configurationItem.resourceType = 'AWS::ACM::Certificate'
 ORDER BY AccountID
 
-
 ## QuickSight ##
 CREATE OR REPLACE VIEW Inventario_ACM AS
 SELECT DISTINCT
@@ -868,7 +836,6 @@ WHERE (("dt" = 'latest') AND ("configurationItem"."resourcetype" = 'AWS::ACM::Ce
 ORDER BY AccountID
 
 
-
 #Route53-Resolver
 ## Athena ##
 SELECT configurationItem.resourceType as ResourceType,
@@ -879,4 +846,4 @@ SELECT configurationItem.resourceType as ResourceType,
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
-AND accountid = '104874417113'
+AND accountid = '904873416324'
