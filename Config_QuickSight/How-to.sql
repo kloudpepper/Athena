@@ -3,49 +3,49 @@
 
 #Crear la tabla
 CREATE EXTERNAL TABLE aws_config_configuration_snapshot (
- fileversion STRING,
- configsnapshotid STRING,
- configurationitems ARRAY < STRUCT <
-        configurationItemVersion : STRING,
-        configurationItemCaptureTime : STRING,
-        configurationStateId : BIGINT,
-        awsAccountId : STRING,
-        configurationItemStatus : STRING,
-        resourceType : STRING,
-        resourceId : STRING,
-        resourceName : STRING,
-        ARN : STRING,
-        awsRegion : STRING,
-        availabilityZone : STRING,
-        configurationStateMd5Hash : STRING,
-        configuration : STRING,
-        supplementaryConfiguration : MAP < STRING, STRING >,
-        tags: MAP < STRING, STRING >,
-        resourceCreationTime : STRING > >
-)
-PARTITIONED BY ( accountid STRING, dt STRING , region STRING )
-ROW FORMAT SERDE
- 'org.openx.data.jsonserde.JsonSerDe'
-WITH SERDEPROPERTIES (
-  'case.insensitive'='false',
-  'mapping.fileversion'='fileVersion',
-  'mapping.configsnapshotid'='configSnapshotId',
-  'mapping.configurationitems'='configurationItems',
-  'mapping.configurationitemversion'='configurationItemVersion',
-  'mapping.configurationitemcapturetime'='configurationItemCaptureTime',
-  'mapping.configurationstateid'='configurationStateId',
-  'mapping.awsaccountid'='awsAccountId',
-  'mapping.configurationitemstatus'='configurationItemStatus',
-  'mapping.resourcetype'='resourceType',
-  'mapping.resourceid'='resourceId',
-  'mapping.resourcename'='resourceName',
-  'mapping.arn'='ARN',
-  'mapping.awsregion'='awsRegion',
-  'mapping.availabilityzone'='availabilityZone',
-  'mapping.configurationstatemd5hash'='configurationStateMd5Hash',
-  'mapping.supplementaryconfiguration'='supplementaryConfiguration',
-  'mapping.configurationstateid'='configurationStateId'
-  )LOCATION 's3://aws-controltower-logs-223293441139-us-east-1/o-l6qcpc3qam/AWSLogs/';
+       fileversion STRING,
+       configsnapshotid STRING,
+       configurationitems ARRAY < STRUCT <
+       configurationItemVersion : STRING,
+       configurationItemCaptureTime : STRING,
+       configurationStateId : BIGINT,
+       awsAccountId : STRING,
+       configurationItemStatus : STRING,
+       resourceType : STRING,
+       resourceId : STRING,
+       resourceName : STRING,
+       ARN : STRING,
+       awsRegion : STRING,
+       availabilityZone : STRING,
+       configurationStateMd5Hash : STRING,
+       configuration : STRING,
+       supplementaryConfiguration : MAP < STRING, STRING >,
+       tags: MAP < STRING, STRING >,
+       resourceCreationTime : STRING > >
+       )
+       PARTITIONED BY ( accountid STRING, dt STRING , region STRING )
+       ROW FORMAT SERDE
+       'org.openx.data.jsonserde.JsonSerDe'
+       WITH SERDEPROPERTIES (
+              'case.insensitive'='false',
+              'mapping.fileversion'='fileVersion',
+              'mapping.configsnapshotid'='configSnapshotId',
+              'mapping.configurationitems'='configurationItems',
+              'mapping.configurationitemversion'='configurationItemVersion',
+              'mapping.configurationitemcapturetime'='configurationItemCaptureTime',
+              'mapping.configurationstateid'='configurationStateId',
+              'mapping.awsaccountid'='awsAccountId',
+              'mapping.configurationitemstatus'='configurationItemStatus',
+              'mapping.resourcetype'='resourceType',
+              'mapping.resourceid'='resourceId',
+              'mapping.resourcename'='resourceName',
+              'mapping.arn'='ARN',
+              'mapping.awsregion'='awsRegion',
+              'mapping.availabilityzone'='availabilityZone',
+              'mapping.configurationstatemd5hash'='configurationStateMd5Hash',
+              'mapping.supplementaryconfiguration'='supplementaryConfiguration',
+              'mapping.configurationstateid'='configurationStateId'
+              )LOCATION 's3://aws-controltower-logs-223293441139-us-east-1/o-l6qcpc3qam/AWSLogs/';
 
 
 
@@ -95,14 +95,14 @@ SELECT configurationItem.configurationItemCaptureTime as CreationTime,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
        configurationItem.awsRegion as Region,
-	   json_extract_scalar(configurationItem.configuration, '$.availabilityZone') as AvailabilityZone,
-	   json_extract_scalar(configurationItem.configuration, '$.availabilityZoneId') as AvailabilityZoneID,
+       json_extract_scalar(configurationItem.configuration, '$.availabilityZone') as AvailabilityZone,
+       json_extract_scalar(configurationItem.configuration, '$.availabilityZoneId') as AvailabilityZoneID,
        configurationItem.resourceId as SubnetID,
        configurationItem.tags['Name'] as SubnetName,
        json_extract_scalar(configurationItem.configuration, '$.vpcId') as VpcID,
        json_extract_scalar(configurationItem.configuration, '$.cidrBlock') as CidrBlock,
-	   json_extract_scalar(configurationItem.configuration, '$.availableIpAddressCount') as AvailableIpAddressCount,
-	   json_extract_scalar(configurationItem.configuration, '$.mapPublicIpOnLaunch') as MapPublicIpOnLaunch
+       json_extract_scalar(configurationItem.configuration, '$.availableIpAddressCount') as AvailableIpAddressCount,
+       json_extract_scalar(configurationItem.configuration, '$.mapPublicIpOnLaunch') as MapPublicIpOnLaunch
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -182,12 +182,12 @@ SELECT configurationItem.configurationItemCaptureTime as CreationTime,
        configurationItem.tags['Name'] as EndpointName,
        json_extract_scalar(configurationItem.configuration, '$.vpcId') as VpcID,
        json_extract_scalar(configurationItem.configuration, '$.serviceName') as ServiceName,
-	   json_extract_scalar(configurationItem.configuration, '$.vpcEndpointType') as VpcEndpointType,
-	   json_extract_scalar(configurationItem.configuration, '$.subnetIds[0]') as SubnetId1,
-	   json_extract_scalar(configurationItem.configuration, '$.subnetIds[1]') as SubnetId2,
-	   json_extract_scalar(configurationItem.configuration, '$.networkInterfaceIds[0]') as NetworkInterfaceId1,
-	   json_extract_scalar(configurationItem.configuration, '$.networkInterfaceIds[1]') as NetworkInterfaceId2,
-	   json_extract_scalar(configurationItem.configuration, '$.groups[0].groupId') as SecurityGroupID
+       json_extract_scalar(configurationItem.configuration, '$.vpcEndpointType') as VpcEndpointType,
+       json_extract_scalar(configurationItem.configuration, '$.subnetIds[0]') as SubnetId1,
+       json_extract_scalar(configurationItem.configuration, '$.subnetIds[1]') as SubnetId2,
+       json_extract_scalar(configurationItem.configuration, '$.networkInterfaceIds[0]') as NetworkInterfaceId1,
+       json_extract_scalar(configurationItem.configuration, '$.networkInterfaceIds[1]') as NetworkInterfaceId2,
+       json_extract_scalar(configurationItem.configuration, '$.groups[0].groupId') as SecurityGroupID
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -228,7 +228,7 @@ SELECT configurationItem.configurationItemCaptureTime as CreationTime,
        configurationItem.awsRegion as Region,
        configurationItem.resourceId as SecurityGroupID,
        configurationItem.tags['Name'] as Name,
-	   configurationItem.resourceName as SecurityGroupName,
+       configurationItem.resourceName as SecurityGroupName,
        json_extract_scalar(configurationItem.configuration, '$.vpcId') as VpcID,
        json_extract_scalar(configurationItem.configuration, '$.description') as Description
 FROM config_db.aws_config_configuration_snapshot
@@ -330,7 +330,7 @@ SELECT configurationItem.configurationItemCaptureTime as CreationTime,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
        configurationItem.awsRegion as Region,
-	   configurationItem.resourceName as LoadBalancerName,
+       configurationItem.resourceName as LoadBalancerName,
        json_extract_scalar(configurationItem.configuration, '$.dNSName') as DNSName,
        json_extract_scalar(configurationItem.configuration, '$.type') as Type,
        json_extract_scalar(configurationItem.configuration, '$.scheme') as Scheme,
@@ -375,29 +375,29 @@ SELECT json_extract_scalar(configurationItem.configuration, '$.instanceCreateTim
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
        configurationItem.awsRegion as Region,
-	   configurationItem.resourceName as DBidentifier,
-	   json_extract_scalar(configurationItem.configuration, '$.dBInstanceClass') as DBInstanceClass,
-	   json_extract_scalar(configurationItem.configuration, '$.endpoint.address') as Endpoint,
-	   json_extract_scalar(configurationItem.configuration, '$.endpoint.port') as Port,
+       configurationItem.resourceName as DBidentifier,
+       json_extract_scalar(configurationItem.configuration, '$.dBInstanceClass') as DBInstanceClass,
+       json_extract_scalar(configurationItem.configuration, '$.endpoint.address') as Endpoint,
+       json_extract_scalar(configurationItem.configuration, '$.endpoint.port') as Port,
        json_extract_scalar(configurationItem.configuration, '$.engine') as Engine,
        json_extract_scalar(configurationItem.configuration, '$.engineVersion') as EngineVersion,
        json_extract_scalar(configurationItem.configuration, '$.dBName') as DBName,
        json_extract_scalar(configurationItem.configuration, '$.licenseModel') as LicenseModel,
-	   json_extract_scalar(configurationItem.configuration, '$.storageType') as StorageType,
-	   json_extract_scalar(configurationItem.configuration, '$.allocatedStorage') as AllocatedStorageGiB,
-	   json_extract_scalar(configurationItem.configuration, '$.iops') as IOPS,
-	   json_extract_scalar(configurationItem.configuration, '$.storageEncrypted') as StorageEncrypted,
-	   json_extract_scalar(configurationItem.configuration, '$.publiclyAccessible') as PubliclyAccessible,
-	   json_extract_scalar(configurationItem.configuration, '$.deletionProtection') as DeletionProtection,
-	   json_extract_scalar(configurationItem.configuration, '$.multiAZ') as MultiAZ,
-	   json_extract_scalar(configurationItem.configuration, '$.dBSubnetGroup.vpcId') as VpcID,
-	   configurationItem.availabilityZone as AvailabilityZone,
-	   json_extract_scalar(configurationItem.configuration, '$.vpcSecurityGroups[0].vpcSecurityGroupId') as VpcSecurityGroups,
-	   json_extract_scalar(configurationItem.configuration, '$.dBSubnetGroup.dBSubnetGroupName') as SubnetGroupName,
-	   json_extract_scalar(configurationItem.configuration, '$.dBParameterGroups[0].dBParameterGroupName') as DBParameterGroupName,
-	   json_extract_scalar(configurationItem.configuration, '$.optionGroupMemberships[0].optionGroupName') as OptionGroupName,
-	   json_extract_scalar(configurationItem.configuration, '$.characterSetName') as CharacterSetName,
-	   json_extract_scalar(configurationItem.configuration, '$.ncharCharacterSetName') as NcharCharacterSetName
+       json_extract_scalar(configurationItem.configuration, '$.storageType') as StorageType,
+       json_extract_scalar(configurationItem.configuration, '$.allocatedStorage') as AllocatedStorageGiB,
+       json_extract_scalar(configurationItem.configuration, '$.iops') as IOPS,
+       json_extract_scalar(configurationItem.configuration, '$.storageEncrypted') as StorageEncrypted,
+       json_extract_scalar(configurationItem.configuration, '$.publiclyAccessible') as PubliclyAccessible,
+       json_extract_scalar(configurationItem.configuration, '$.deletionProtection') as DeletionProtection,
+       json_extract_scalar(configurationItem.configuration, '$.multiAZ') as MultiAZ,
+       json_extract_scalar(configurationItem.configuration, '$.dBSubnetGroup.vpcId') as VpcID,
+       configurationItem.availabilityZone as AvailabilityZone,
+       json_extract_scalar(configurationItem.configuration, '$.vpcSecurityGroups[0].vpcSecurityGroupId') as VpcSecurityGroups,
+       json_extract_scalar(configurationItem.configuration, '$.dBSubnetGroup.dBSubnetGroupName') as SubnetGroupName,
+       json_extract_scalar(configurationItem.configuration, '$.dBParameterGroups[0].dBParameterGroupName') as DBParameterGroupName,
+       json_extract_scalar(configurationItem.configuration, '$.optionGroupMemberships[0].optionGroupName') as OptionGroupName,
+       json_extract_scalar(configurationItem.configuration, '$.characterSetName') as CharacterSetName,
+       json_extract_scalar(configurationItem.configuration, '$.ncharCharacterSetName') as NcharCharacterSetName
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -448,13 +448,13 @@ SELECT json_extract_scalar(configurationItem.configuration, '$.creationDate') as
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
        configurationItem.awsRegion as Region,
-	   configurationItem.resourceName as Name,
-	   json_extract_scalar(configurationItem.supplementaryConfiguration['BucketVersioningConfiguration'], '$.status') as BucketVersioningConfiguration,
-	   json_extract_scalar(configurationItem.supplementaryConfiguration['ServerSideEncryptionConfiguration'], '$.rules[0].applyServerSideEncryptionByDefault.sseAlgorithm') as ServerSideEncryptionConfiguration,
-	   json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.blockPublicAcls') as BlockPublicAcls,
-	   json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.ignorePublicAcls') as IgnorePublicAcls,
-	   json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.blockPublicPolicy') as BlockPublicPolicy,
-	   json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.restrictPublicBuckets') as RestrictPublicBuckets
+       configurationItem.resourceName as Name,
+       json_extract_scalar(configurationItem.supplementaryConfiguration['BucketVersioningConfiguration'], '$.status') as BucketVersioningConfiguration,
+       json_extract_scalar(configurationItem.supplementaryConfiguration['ServerSideEncryptionConfiguration'], '$.rules[0].applyServerSideEncryptionByDefault.sseAlgorithm') as ServerSideEncryptionConfiguration,
+       json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.blockPublicAcls') as BlockPublicAcls,
+       json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.ignorePublicAcls') as IgnorePublicAcls,
+       json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.blockPublicPolicy') as BlockPublicPolicy,
+       json_extract_scalar(configurationItem.supplementaryConfiguration['PublicAccessBlockConfiguration'], '$.restrictPublicBuckets') as RestrictPublicBuckets
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -490,9 +490,9 @@ SELECT json_extract_scalar(configurationItem.configuration, '$.createdDate') as 
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
        configurationItem.awsRegion as Region,
-	   configurationItem.resourceName as ApiName,
-	   json_extract_scalar(configurationItem.configuration, '$.id') as ApiID,
-	   json_extract_scalar(configurationItem.configuration, '$.endpointConfiguration.types[0]') as EndpointType
+       configurationItem.resourceName as ApiName,
+       json_extract_scalar(configurationItem.configuration, '$.id') as ApiID,
+       json_extract_scalar(configurationItem.configuration, '$.endpointConfiguration.types[0]') as EndpointType
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -523,17 +523,17 @@ SELECT json_extract_scalar(configurationItem.configuration, '$.lastModified') as
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
        configurationItem.awsRegion as Region,
-	   configurationItem.resourceName as FunctionName,
-	   json_extract_scalar(configurationItem.configuration, '$.runtime') as Runtime,
-	   json_extract_scalar(configurationItem.configuration, '$.codeSize') as CodeSizeByte,
-	   json_extract_scalar(configurationItem.configuration, '$.timeout') as TimeoutSeconds,
-	   json_extract_scalar(configurationItem.configuration, '$.memorySize') as MemorySizeMB,
-	   json_extract_scalar(configurationItem.configuration, '$.handler') as Handler,
-	   json_extract_scalar(configurationItem.configuration, '$.role') as Role,
-	   json_extract_scalar(configurationItem.configuration, '$.vpcConfig.subnetIds[0]') as SubnetID1,
-	   json_extract_scalar(configurationItem.configuration, '$.vpcConfig.subnetIds[1]') as SubnetID2,
-	   json_extract_scalar(configurationItem.configuration, '$.vpcConfig.securityGroupIds[0]') as SecurityGroupID,
-	   json_extract_scalar(configurationItem.configuration, '$.description') as Description
+       configurationItem.resourceName as FunctionName,
+       json_extract_scalar(configurationItem.configuration, '$.runtime') as Runtime,
+       json_extract_scalar(configurationItem.configuration, '$.codeSize') as CodeSizeByte,
+       json_extract_scalar(configurationItem.configuration, '$.timeout') as TimeoutSeconds,
+       json_extract_scalar(configurationItem.configuration, '$.memorySize') as MemorySizeMB,
+       json_extract_scalar(configurationItem.configuration, '$.handler') as Handler,
+       json_extract_scalar(configurationItem.configuration, '$.role') as Role,
+       json_extract_scalar(configurationItem.configuration, '$.vpcConfig.subnetIds[0]') as SubnetID1,
+       json_extract_scalar(configurationItem.configuration, '$.vpcConfig.subnetIds[1]') as SubnetID2,
+       json_extract_scalar(configurationItem.configuration, '$.vpcConfig.securityGroupIds[0]') as SecurityGroupID,
+       json_extract_scalar(configurationItem.configuration, '$.description') as Description
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -572,12 +572,12 @@ SELECT json_extract_scalar(configurationItem.configuration, '$.createDate') as C
        configurationItem.resourceType as ResourceType,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
-	   json_extract_scalar(configurationItem.configuration, '$.userName') as UserName,
-	   json_extract_scalar(configurationItem.configuration, '$.groupList[0]') as GroupName,
-	   json_extract_scalar(configurationItem.configuration, '$.userId') as UserID,
-	   configurationItem.tags['Nombre'] as Nombre,
-	   configurationItem.tags['Correo'] as Correo,
-	   configurationItem.tags['Telefono'] as Telefono
+       json_extract_scalar(configurationItem.configuration, '$.userName') as UserName,
+       json_extract_scalar(configurationItem.configuration, '$.groupList[0]') as GroupName,
+       json_extract_scalar(configurationItem.configuration, '$.userId') as UserID,
+       configurationItem.tags['Nombre'] as Nombre,
+       configurationItem.tags['Correo'] as Correo,
+       configurationItem.tags['Telefono'] as Telefono
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -609,7 +609,7 @@ ORDER BY AccountID
 SELECT configurationItem.resourceType as ResourceType,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
-	   configurationItem.awsRegion as Region,
+       configurationItem.awsRegion as Region,
        json_extract_scalar(configurationItem.configuration, '$.ClusterName') as ClusterName
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
@@ -637,7 +637,7 @@ ORDER BY AccountID
 SELECT configurationItem.resourceType as ResourceType,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
-	   configurationItem.awsRegion as Region,
+       configurationItem.awsRegion as Region,
        json_extract_scalar(configurationItem.configuration, '$.ServiceName') as ServiceName,
        json_extract_scalar(configurationItem.configuration, '$.LaunchType') as LaunchType,
        json_extract_scalar(configurationItem.configuration, '$.PlatformVersion') as PlatformVersion,
@@ -673,14 +673,14 @@ ORDER BY AccountID
 SELECT configurationItem.resourceType as ResourceType,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
-	   configurationItem.awsRegion as Region,
-	   configurationItem.resourceId as FileSystemID,
-	   configurationItem.tags['Name'] as FileSystemName,
-	   json_extract_scalar(configurationItem.configuration, '$.Encrypted') as Encrypted,
-	   json_extract_scalar(configurationItem.configuration, '$.PerformanceMode') as PerformanceMode,
-	   json_extract_scalar(configurationItem.configuration, '$.ThroughputMode') as ThroughputMode,
-	   json_extract_scalar(configurationItem.configuration, '$.LifecyclePolicies[0].TransitionToIA') as LifecyclePolicies,
-	   json_extract_scalar(configurationItem.configuration, '$.BackupPolicy.Status') as BackupPolicy
+       configurationItem.awsRegion as Region,
+       configurationItem.resourceId as FileSystemID,
+       configurationItem.tags['Name'] as FileSystemName,
+       json_extract_scalar(configurationItem.configuration, '$.Encrypted') as Encrypted,
+       json_extract_scalar(configurationItem.configuration, '$.PerformanceMode') as PerformanceMode,
+       json_extract_scalar(configurationItem.configuration, '$.ThroughputMode') as ThroughputMode,
+       json_extract_scalar(configurationItem.configuration, '$.LifecyclePolicies[0].TransitionToIA') as LifecyclePolicies,
+       json_extract_scalar(configurationItem.configuration, '$.BackupPolicy.Status') as BackupPolicy
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -713,18 +713,18 @@ ORDER BY AccountID
 SELECT configurationItem.resourceType as ResourceType,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
-	   configurationItem.awsRegion as Region,
-	   configurationItem.resourceId as TransitGatewayID,
-	   json_extract_scalar(configurationItem.configuration, '$.Description') as Description,
-	   json_extract_scalar(configurationItem.configuration, '$.DefaultRouteTablePropagation') as DefaultRouteTablePropagation,
-	   json_extract_scalar(configurationItem.configuration, '$.AutoAcceptSharedAttachments') as AutoAcceptSharedAttachments,
-	   json_extract_scalar(configurationItem.configuration, '$.DefaultRouteTableAssociation') as DefaultRouteTableAssociation,
-	   json_extract_scalar(configurationItem.configuration, '$.AssociationDefaultRouteTableId') as AssociationDefaultRouteTableId,
-	   json_extract_scalar(configurationItem.configuration, '$.PropagationDefaultRouteTableId') as PropagationDefaultRouteTableId,
-	   json_extract_scalar(configurationItem.configuration, '$.VpnEcmpSupport') as VpnEcmpSupport,
-	   json_extract_scalar(configurationItem.configuration, '$.DnsSupport') as DnsSupport,
-	   json_extract_scalar(configurationItem.configuration, '$.MulticastSupport') as MulticastSupport,
-	   json_extract_scalar(configurationItem.configuration, '$.AmazonSideAsn') as AmazonSideAsn
+       configurationItem.awsRegion as Region,
+       configurationItem.resourceId as TransitGatewayID,
+       json_extract_scalar(configurationItem.configuration, '$.Description') as Description,
+       json_extract_scalar(configurationItem.configuration, '$.DefaultRouteTablePropagation') as DefaultRouteTablePropagation,
+       json_extract_scalar(configurationItem.configuration, '$.AutoAcceptSharedAttachments') as AutoAcceptSharedAttachments,
+       json_extract_scalar(configurationItem.configuration, '$.DefaultRouteTableAssociation') as DefaultRouteTableAssociation,
+       json_extract_scalar(configurationItem.configuration, '$.AssociationDefaultRouteTableId') as AssociationDefaultRouteTableId,
+       json_extract_scalar(configurationItem.configuration, '$.PropagationDefaultRouteTableId') as PropagationDefaultRouteTableId,
+       json_extract_scalar(configurationItem.configuration, '$.VpnEcmpSupport') as VpnEcmpSupport,
+       json_extract_scalar(configurationItem.configuration, '$.DnsSupport') as DnsSupport,
+       json_extract_scalar(configurationItem.configuration, '$.MulticastSupport') as MulticastSupport,
+       json_extract_scalar(configurationItem.configuration, '$.AmazonSideAsn') as AmazonSideAsn
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -799,13 +799,13 @@ SELECT json_extract_scalar(configurationItem.configuration, '$.createdAt') as Cr
        json_extract_scalar(configurationItem.configuration, '$.certificateArn') as certificateArn,
        json_extract_scalar(configurationItem.configuration, '$.domainName') as domainName,
        json_extract_scalar(configurationItem.configuration, '$.serial') as serial,
-	   json_extract_scalar(configurationItem.configuration, '$.issuer') as issuer,
-	   json_extract_scalar(configurationItem.configuration, '$.status') as status,
-	   json_extract_scalar(configurationItem.configuration, '$.notAfter') as notAfter,
-	   json_extract_scalar(configurationItem.configuration, '$.keyAlgorithm') as keyAlgorithm,
-	   json_extract_scalar(configurationItem.configuration, '$.signatureAlgorithm') as signatureAlgorithm,
-	   json_extract_scalar(configurationItem.configuration, '$.type') as type,
-	   json_extract_scalar(configurationItem.configuration, '$.renewalSummary.renewalStatus') as renewalStatus
+       json_extract_scalar(configurationItem.configuration, '$.issuer') as issuer,
+       json_extract_scalar(configurationItem.configuration, '$.status') as status,
+       json_extract_scalar(configurationItem.configuration, '$.notAfter') as notAfter,
+       json_extract_scalar(configurationItem.configuration, '$.keyAlgorithm') as keyAlgorithm,
+       json_extract_scalar(configurationItem.configuration, '$.signatureAlgorithm') as signatureAlgorithm,
+       json_extract_scalar(configurationItem.configuration, '$.type') as type,
+       json_extract_scalar(configurationItem.configuration, '$.renewalSummary.renewalStatus') as renewalStatus
 FROM config_db.aws_config_configuration_snapshot
 CROSS JOIN UNNEST(configurationitems) AS t(configurationItem)
 WHERE dt = 'latest'
@@ -839,7 +839,7 @@ ORDER BY AccountID
 #Route53-Resolver
 ## Athena ##
 SELECT configurationItem.resourceType as ResourceType,
-	   configurationItem.resourceId as resourceId,
+       configurationItem.resourceId as resourceId,
        accountid as AccountID,
        configurationItem.tags['Environment'] as Environment,
        configurationItem.awsRegion as Region
